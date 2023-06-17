@@ -1,7 +1,8 @@
 import openai
 
 if __name__ == "__main__":
-    openai.api_key = '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'
+    with open("api_key.txt") as f:
+        openai.api_key = f.read()
 
     # list models
     models = openai.Model.list()
