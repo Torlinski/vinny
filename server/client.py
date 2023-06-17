@@ -17,29 +17,14 @@ class Client:
 
         self.sio.connect(server_url)
 
-    def append(self, text):
-        self.sio.emit('update', {'action': 'append', 'body': text})
+    def update_para(self, text):
+        self.sio.emit('update_para', {'body': text})
 
-    def replace(self, text):
-        self.sio.emit('update', {'action': 'replace', 'body': text})
+    def update_command(self, command):
+        self.sio.emit('update_command', {'command': command})
+
+    def change_para(self, para):
+        self.sio.emit('change_para', {'para': para})
 
     def disconnect(self):
         self.sio.disconnect()
-
-    def write_transcripts(self, responses):
-        final = False
-        buffer = ""
-        for response in responses:
-            for result in response.results:
-                transcript = buffer
-                buffer = result.alternatives[0].transcript
-                if final:
-                    self.append(transcript)
-                    final = False
-                else:
-                    self.replace(transcript)
-                if result.is_final:
-                    self.replace(buffer)
-                    buffer = ""
-                    final = True
-                    print(buffer)

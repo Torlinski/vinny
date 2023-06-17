@@ -3,6 +3,7 @@ import os
 from google.cloud import speech
 import stt.transcription as transcription
 from server.client import Client
+from process import CommandProcessor
 
 def main():
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'dependable-fuze-388619-8912b19e9733.json'
@@ -17,7 +18,7 @@ def main():
     )
     streaming_config = speech.StreamingRecognitionConfig(
         config=config,
-        interim_results=True,
+        interim_results=False,
     )
 
     with transcription.MicrophoneStream(transcription.RATE, transcription.CHUNK) as stream:
@@ -32,14 +33,17 @@ def main():
         except Exception as e:
             print(e)
 
-        # Create the Client object
-        ws_client = Client('http://127.0.0.1:8080')
+        client = Client('http://localhost:8080')
+        processor = CommandProcessor(client)
 
-        # Now, put the transcription responses to use.
-        ws_client.write_transcripts(responses)
+        print("Started listening...")
 
-        # Disconnect from the server
-        ws_client.disconnect()
+        for response in responses:
+            for result in response.results:
+                transcript = result.alternatives[0].transcript
+                print(transcript)
+                processor.process(transcript)
+
 
 
 if __name__ == "__main__":
