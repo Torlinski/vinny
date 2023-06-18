@@ -3,7 +3,8 @@ from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
-content = ""  # This variable will hold the current text content
+content = {0: ""}  # This variable will hold the current text content as a dictionary
+cur = 0  # This variable will hold the current paragraph index
 
 @app.route('/')
 def index():
@@ -47,18 +48,28 @@ def index():
                 <div id="command"></div>
             </body>
         </html>
-    """, content=content)
+    """, content="\n".join([f"{k}: {v}" for k, v in content.items()]))
 
 
 @socketio.on('update_para')
 def handle_update_para(para):
     global content
-    content[para.get('paragraph')] = para.get('content')
-    emit('content', content, broadcast=True)
+    content[cur] = para.get('para')
+    formatted_content = "\n".join([f"{k}: {v}" for k, v in content.items()])
+    print(f"{formatted_content}, {para.get('para')}")
+    emit('content', formatted_content, broadcast=True)
 
-@socketio.on('change_para')
-def handle_change_para(para):
-    emit('paragraph', para.get('paragraph'), broadcast=True)
+@socketio.on('change_cur')
+def handle_change_cur(new_cur):
+    global cur
+    global content
+    new_cur = int(new_cur.get('cur'))
+    if content.get(new_cur) is None:
+        content[new_cur] = ""
+    cur = new_cur
+    emit('paragraph', cur, broadcast=True)
+    formatted_content = "\n".join([f"{k}: {v}" for k, v in content.items()])
+    emit('content', formatted_content, broadcast=True)
 
 @socketio.on('update_command')
 def handle_update_command(command):

@@ -17,14 +17,14 @@ class Client:
 
         self.sio.connect(server_url)
 
-    def update_para(self, text):
-        self.sio.emit('update_para', {'body': text})
+    def update_para(self, para):
+        self.sio.emit('update_para', {'para': para})
 
     def update_command(self, command):
         self.sio.emit('update_command', {'command': command})
 
-    def change_para(self, para):
-        self.sio.emit('change_para', {'para': para})
+    def change_cur(self, cur):
+        self.sio.emit('change_cur', {'cur': cur})
 
     def disconnect(self):
         self.sio.disconnect()

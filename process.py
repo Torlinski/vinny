@@ -42,17 +42,17 @@ class CommandProcessor:
     def new_paragraph(self, _):
         self.cur += 1
         self.body[self.cur] = ""
-        self.ws_client.change_para(self.cur)  # Notify the WebSocket server about the change
+        self.ws_client.change_cur(self.cur)  # Notify the WebSocket server about the change
 
     def select_paragraph_above(self, _):
         if self.cur > 0:
             self.cur -= 1
-            self.ws_client.change_para(self.cur)  # Notify the WebSocket server about the change
+            self.ws_client.change_cur(self.cur)  # Notify the WebSocket server about the change
 
     def select_paragraph_below(self, _):
         if self.cur < len(self.body) - 1:
             self.cur += 1
-            self.ws_client.change_para(self.cur)  # Notify the WebSocket server about the change
+            self.ws_client.change_cur(self.cur)  # Notify the WebSocket server about the change
 
     def undo(self, _):
         if self.command_history:
@@ -62,7 +62,10 @@ class CommandProcessor:
 
     def type(self, command):
         sentence = command[5:]  # remove 'type ' from the start
-        self.body[self.cur] += ' ' + sentence
+        sentence = sentence[0].upper() + sentence[1:] #capitalize the first letter of the sentence
+        if self.body[self.cur] != "":
+            self.body[self.cur] += " "
+        self.body[self.cur] += sentence + "."
         self.ws_client.update_para(self.body[self.cur])  # Send the new sentence to the WebSocket server
 
     def replace(self, command):
