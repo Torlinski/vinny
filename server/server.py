@@ -1,63 +1,39 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 content = {0: ""}  # This variable will hold the current text content as a dictionary
+status = ''
 cur = 0  # This variable will hold the current paragraph index
+
+items = ['', 'Hello', 'How', 'Are', 'You']
+progress = []
+holder = []
 
 @app.route('/')
 def index():
-    # Render the index template with the current content
-    return render_template_string("""
-        <!doctype html>
-        <html>
-            <head>
-                <title>vinny</title>
-                <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.min.js"></script>
-                <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    var socket = io.connect('http://' + document.domain + ':' + location.port);
-                    socket.on('content', function(content) {
-                        document.getElementById('content').innerText = content;
-                    });
-                    socket.on('paragraph', function(paragraph) {
-                        var paras = document.getElementById('content').children;
-                        for (var i = 0; i < paras.length; i++) {
-                            paras[i].style.backgroundColor = i == paragraph ? 'yellow' : 'transparent';
-                        }
-                    });
-                    socket.on('command', function(command) {
-                        document.getElementById('command').innerText = command;
-                    });
-                });
-                </script>
-                <style>
-                #content {
-                    white-space: pre-line;
-                }
-                #command {
-                    border: 1px solid black;
-                    padding: 10px;
-                    margin-top: 10px;
-                }
-                </style>
-            </head>
-            <body>
-                <div id="content">{{ content }}</div>
-                <div id="command"></div>
-            </body>
-        </html>
-    """, content="\n".join([f"{k}: {v}" for k, v in content.items()]))
+    return render_template('home.html')
 
 
 @socketio.on('update_para')
 def handle_update_para(para):
     global content
+    global holder
+    holder.append(para.get('para'))
     content[cur] = para.get('para')
     formatted_content = "\n".join([f"{k}: {v}" for k, v in content.items()])
     print(f"{formatted_content}, {para.get('para')}")
     emit('content', formatted_content, broadcast=True)
+
+
+@socketio.on('update_status')
+def handle_update_status(status):
+    emit('status', status.get('status'), broadcast=True)
+
+@socketio.on('update_comlist')
+def handle_update_comlist(comlist):
+    emit('comlist', comlist.get('comlist'), broadcast=True)
 
 @socketio.on('change_cur')
 def handle_change_cur(new_cur):
@@ -75,6 +51,5 @@ def handle_change_cur(new_cur):
 def handle_update_command(command):
     emit('command', command.get('command'), broadcast=True)
 
-
 if __name__ == '__main__':
-    socketio.run(app, host="127.0.0.1", port=8080)
+    socketio.run(app, host="127.0.0.1", port=8080, debug=True)

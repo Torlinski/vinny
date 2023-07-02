@@ -20,6 +20,12 @@ class Client:
     def update_para(self, para):
         self.sio.emit('update_para', {'para': para})
 
+    def update_comlist(self, comlist):
+        self.sio.emit('update_comlist', {'comlist': comlist})
+
+    def update_status(self, status):
+        self.sio.emit('update_status', {'status': status})
+
     def update_command(self, command):
         self.sio.emit('update_command', {'command': command})
 
