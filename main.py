@@ -1,60 +1,62 @@
 # main.py
 import os
 from google.cloud import speech
-import stt.transcription as transcription
-from server.client import Client
-from process import CommandProcessor
-from STT_Session import STT_Session
+from objects.Session_NVariant import Session_NVariant
+from server.utils.HTML_Interface import HTML_Interface
+from objects.SIO_Client import SIO_Client
+import utils.transcription as transcription
+from scratch.process import CommandProcessor
 import os
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 def main():
+    os.system('cls' if os.name=='nt' else 'clear')
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'dependable-fuze-388619-8912b19e9733.json'
-
     language_code = "en-US"  # a BCP-47 language tag
-
-    socket_client = Client('http://localhost:8080')
-    socket_client.update_status('Ready')
-
     speech_client = speech.SpeechClient()
-    config = speech.RecognitionConfig(
+    speech_config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
         sample_rate_hertz=transcription.RATE,
         language_code=language_code,
     )
     streaming_config = speech.StreamingRecognitionConfig(
-        config=config,
+        config=speech_config,
         interim_results=False,
     )
 
-    with transcription.MicrophoneStream(transcription.RATE, transcription.CHUNK) as stream:
+    stt_client = SIO_Client(session=Session_NVariant(), server_url = 'http://localhost:8080')
+    stt_client.set_status('Ready')
 
-        audio_generator = stream.generator()
+    try:
+        with transcription.MicrophoneStream(transcription.RATE, transcription.CHUNK) as stream:
 
-        requests = (
-            speech.StreamingRecognizeRequest(audio_content=content)
-            for content in audio_generator
-        )
+            audio_generator = stream.generator()
 
+            requests = (
+                speech.StreamingRecognizeRequest(audio_content=content)
+                for content in audio_generator
+            )
 
-        try:
             responses = speech_client.streaming_recognize(streaming_config, requests)
-            session = STT_Session()
-            os.system('cls' if os.name=='nt' else 'clear')
-            print("Started listening...")
-            socket_client.update_status('Listening')
+            logging.debug("Started listening...")
+            stt_client.set_status('Listening')
 
             for response in responses:
                 for result in response.results:
                     transcript = result.alternatives[0].transcript
-                    session.update(transcript)
-                    socket_client.update_para(session.get_text())
-                    socket_client.update_comlist(session.get_comlist())
+                    try:
+                        stt_client.update(transcript)
+                    except Exception as e:
+                        stt_client.set_status('Internal Error')
+                        logging.debug(e)
 
-        except KeyboardInterrupt as e:
-            print("Ended Stream")
-        except Exception as e:
-            if not isinstance(e, KeyboardInterrupt):
-                print(e)
+    except KeyboardInterrupt as e:
+        logging.debug("Manually Ended Stream")
+    except Exception as e:
+        if not isinstance(e, KeyboardInterrupt):
+            logging.debug(e)
 
 
 

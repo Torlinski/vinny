@@ -1,12 +1,23 @@
-from chatgpt.client import ChatGPTClient  # Assuming chatgpt.client.py has ChatGPTClient class
+import re
+import logging
 
-class CommandProcessor:
-    def __init__(self, ws_client):
+from objects.Session import Session
+
+logging.basicConfig(level=logging.DEBUG)
+
+class Session_GVariant(Session):
+
+    def __init__(self):
+        super.__init__()
         self.body = {0: ""}
         self.cur = 0
         self.command_history = []
-        self.ws_client = ws_client
-        self.chatgpt_client = ChatGPTClient()  # Create an instance of the ChatGPT client
+        self.status = 'Not Used'
+
+    def update(self, transcript):
+        self.process(transcript)
+        self.commands = [str(x) for x in self.command_history]
+        self.paragraphs = []
 
     def process(self, command):
         func_name = None
@@ -42,23 +53,21 @@ class CommandProcessor:
     def new_paragraph(self, _):
         self.cur += 1
         self.body[self.cur] = ""
-        self.ws_client.change_cur(self.cur)  # Notify the WebSocket server about the change
+
 
     def select_paragraph_above(self, _):
         if self.cur > 0:
             self.cur -= 1
-            self.ws_client.change_cur(self.cur)  # Notify the WebSocket server about the change
+
 
     def select_paragraph_below(self, _):
         if self.cur < len(self.body) - 1:
             self.cur += 1
-            self.ws_client.change_cur(self.cur)  # Notify the WebSocket server about the change
 
     def undo(self, _):
         if self.command_history:
             last_command, self.cur, last_body = self.command_history.pop()
             self.body[self.cur] = last_body
-            self.ws_client.update_para(last_body)  # Send the restored body to the WebSocket server
 
     def type(self, command):
         sentence = command[5:]  # remove 'type ' from the start
@@ -66,7 +75,6 @@ class CommandProcessor:
         if self.body[self.cur] != "":
             self.body[self.cur] += " "
         self.body[self.cur] += sentence + "."
-        self.ws_client.update_para(self.body[self.cur])  # Send the new sentence to the WebSocket server
 
     def replace(self, command):
         parts = command.split()
@@ -75,7 +83,6 @@ class CommandProcessor:
             replace_text = " ".join(parts[1:replace_index])
             with_text = " ".join(parts[replace_index + 1:])
             self.body[self.cur] = self.body[self.cur].replace(replace_text, with_text)
-            self.ws_client.update_para(self.body[self.cur])  # Send the replaced paragraph to the WebSocket server
 
     def add(self, command):
         added_text = command[4:]  # remove 'add ' from the start
@@ -83,7 +90,7 @@ class CommandProcessor:
         self.ws_client.update_para(self.body[self.cur])  # Send the updated paragraph to the WebSocket server
 
     def chatgpt(self, command):
-        chat_gpt_client = ChatGPTClient()
-        new_text = chat_gpt_client.process(command)
-        self.body[self.cur] = new_text
-        self.ws_client.update_para(new_text)  # Send the new text from ChatGPT
+        pass
+        #chat_gpt_client = ChatGPTClient()
+        #new_text = chat_gpt_client.process(command)
+        #self.body[self.cur] = new_text

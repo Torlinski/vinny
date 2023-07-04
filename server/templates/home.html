@@ -12,8 +12,11 @@
             socket.on('status', function(status) {
                 document.getElementById('status').innerText = status;
             });
-            socket.on('comlist', function(comlist) {
-                document.getElementById('comlist').innerHTML = comlist;
+            socket.on('commands', function(commands) {
+                document.getElementById('commands').innerHTML = commands;
+            });
+            socket.on('chatgpt', function(chatgpt) {
+                document.getElementById('chatgpt').innerHTML = chatgpt;
             });
         });
         </script>
@@ -25,7 +28,8 @@
     </head>
     <body>
         <div id="status">Not Connected</div>
-        <div id="comlist"></div>
+        <div id="chatgpt"></div>
+        <div id="commands"></div>
         <div id="content"></div>
     </body>
 </html>
