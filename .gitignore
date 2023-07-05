@@ -166,3 +166,4 @@ api_key.txt
 
 *.wav
 scratch
+poetry.lock
