@@ -163,6 +163,7 @@ notes.txt
 dependable-fuze-388619-8912b19e9733.json
 openai_key.txt
 api_key.txt
+prompt.txt
 
 *.wav
 scratch

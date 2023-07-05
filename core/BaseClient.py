@@ -1,14 +1,15 @@
 # client.py
 import logging
 
-from objects.Session import Session
+from core.Session import Session
 
 logging.basicConfig(level=logging.DEBUG)
 
-class Client():
-    def __init__(self, session: Session):
-        self.session = session
-         
+
+class BaseClient:
+    def __init__(self):
+        self.session = Session()
+
     def update(self, transcript):
         self.session.update(transcript)
 

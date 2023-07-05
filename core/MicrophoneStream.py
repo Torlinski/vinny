@@ -3,10 +3,11 @@ from six.moves import queue
 
 # Audio recording parameters
 RATE = 16000
-#CHUNK = int(RATE / 10)  # 100ms
+# CHUNK = int(RATE / 10)  # 100ms
 CHUNK = RATE
 
-class MicrophoneStream(object):
+
+class MicrophoneStream:
     """Opens a recording stream as a generator yielding the audio chunks."""
 
     def __init__(self, rate, chunk):
@@ -15,7 +16,7 @@ class MicrophoneStream(object):
 
         self._buff = queue.Queue()
         self.closed = True
-        self.transcript = ""
+        self.transcript = ''
 
     def __enter__(self):
         self._audio_interface = pyaudio.PyAudio()
@@ -60,12 +61,12 @@ class MicrophoneStream(object):
                 except queue.Empty:
                     break
 
-            yield b"".join(data)
+            yield b''.join(data)
 
 
-class Document(object):
+class Document:
     def __init__(self):
-        self.contents = ""
+        self.contents = ''
 
     def add_to_document(self, text):
         self.contents += text
@@ -84,5 +85,7 @@ class Document(object):
 
             if result.is_final:
                 self.add_to_document(result.alternatives[0].transcript)
-                print('Transcript: {}'.format(result.alternatives[0].transcript))
-            #print(f"Transcript: {result.alternatives[0].transcript} (confidence: {result.alternatives[0].confidence})")
+                print(
+                    'Transcript: {}'.format(result.alternatives[0].transcript)
+                )
+            # print(f"Transcript: {result.alternatives[0].transcript} (confidence: {result.alternatives[0].confidence})")

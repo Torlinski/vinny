@@ -19,3 +19,17 @@ Perform the following commands in a terminal at the project root level.
 - Use `python -m server` to run the flask frontend app from the server folder.
 
 Exit manually using control-c.
+
+### Clean Code
+
+- Use `poetry run mypy .` to check types are ok.
+
+- Use `poetry run blue .` to automatically fix formatting (PEP-8 etc.)
+
+- Use `potry run isort .` to order and group imports.
+
+- Use `poetry run pylint` to run linting.
+
+### Testing
+
+- Use `poetry run pytest` to run tests.
