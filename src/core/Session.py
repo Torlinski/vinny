@@ -1,11 +1,10 @@
 """Holds data related to a particular transcription session"""
 import logging
 import re
-from typing import Any, Dict
 
 from word2number import w2n
 
-from models import SessionPayload
+from src.models import SessionPayload
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -122,10 +121,12 @@ class Session:
 
     def emission(self) -> SessionPayload:
         """Provides session data for external use"""
-        return SessionPayload(**{
-            'paragraphs': self.paragraphs,
-            'commands': self.commands,
-            'index': self.index,
-            'status': self.status,
-            'chatgpt': self.chatgpt,
-        })
+        return SessionPayload(
+            **{
+                'paragraphs': self.paragraphs,
+                'commands': self.commands,
+                'index': self.index,
+                'status': self.status,
+                'chatgpt': self.chatgpt,
+            }
+        )

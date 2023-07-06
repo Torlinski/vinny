@@ -1,7 +1,7 @@
 """Base client class for future clients"""
 import logging
 
-from core.Session import Session
+from src.core.Session import Session
 
 logging.basicConfig(level=logging.DEBUG)
 

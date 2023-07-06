@@ -1,8 +1,7 @@
 {
     "python.analysis.extraPaths": [
-        "./core/",
-        "./server/",
-        "./tests/"
+        "./src/",
+        "./"
     ],
     "python.pythonPath": "venv/bin/python",
     "python.linting.pylintPath": "venv/bin/pylint"

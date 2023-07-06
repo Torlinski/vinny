@@ -5,8 +5,8 @@ import traceback
 
 from google.cloud import speech
 
-from core.MicrophoneStream import MicrophoneStream
-from core.SIOClient import SIOClient
+from src.core.MicrophoneStream import MicrophoneStream
+from src.core.SIOClient import SIOClient
 
 logging.basicConfig(level=logging.DEBUG)
 

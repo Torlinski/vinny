@@ -16,7 +16,7 @@ Perform the following commands in a terminal at the project root level.
 
 - Use `python -m main` to run the transcription service.
 
-- Use `python -m server` to run the flask frontend app from the server folder.
+- Use `python -m src.frontend.server` to run the flask frontend.
 
 Exit manually using control-c.
 
@@ -28,7 +28,7 @@ Exit manually using control-c.
 
 - Use `potry run isort .` to order and group imports.
 
-- Use `poetry run pylint core tests server main.py` to run linting.
+- Use `poetry run pylint src main.py` to run linting.
 
 ### Testing
 

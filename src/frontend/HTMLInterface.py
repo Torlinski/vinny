@@ -1,9 +1,5 @@
 """Interface for converting session payload to html"""
-
-from typing import Any, Dict
-
-from models import SessionPayload
-
+from src.models import SessionPayload
 
 ACTIVE_SENTENCE_COLOUR = '#bf4311'
 ACTIVE_PARAGRAPH_COLOUR = '#eaed82'
@@ -45,9 +41,7 @@ class HTMLInterface:
         """converts session commands to html"""
         output = (
             '<ul>'
-            + ''.join(
-                ['<li>' + x + '</li>' for x in update.commands[::-1]]
-            )
+            + ''.join(['<li>' + x + '</li>' for x in update.commands[::-1]])
             + '</ul>'
         )
         return output
@@ -64,7 +58,9 @@ class HTMLInterface:
                 '<span> as a chatgpt request for the following text: </span>'
             )
             output += f'<mark style="background: {ACTIVE_PARAGRAPH_COLOUR}!important">'
-            output += f'<span>"{" ".join(update.paragraphs[update.index])}"</span>'
+            output += (
+                f'<span>"{" ".join(update.paragraphs[update.index])}"</span>'
+            )
             output += f'</mark>'
             output += f'<span> - Say "Send Request" to confirm. </span>'
             return output

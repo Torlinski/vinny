@@ -1,10 +1,11 @@
 """Flask server for front-end"""
 from typing import Any, Dict
+
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-from models import SessionPayload
 
-from utils.HTMLInterface import HTMLInterface
+from src.frontend.HTMLInterface import HTMLInterface
+from src.models import SessionPayload
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')
@@ -17,8 +18,9 @@ def index():
 
 
 @socketio.on('update')
-def handle_update_status(update: SessionPayload):
+def handle_update_status(update: Dict[str, Any]):
     """Listen for messages on websocket containing session data to broadcast"""
+    update = SessionPayload(**update)
     emit('content', HTMLInterface.html_text(update), broadcast=True)
     emit('commands', HTMLInterface.html_commands(update), broadcast=True)
     emit('status', update.status, broadcast=True)

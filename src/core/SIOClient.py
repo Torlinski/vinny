@@ -3,7 +3,7 @@ import logging
 
 import socketio
 
-from core.BaseClient import BaseClient
+from src.core.BaseClient import BaseClient
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -32,12 +32,12 @@ class SIOClient(BaseClient):
     def update(self, transcript: str):
         """Update session with transcript and emit data"""
         super().update(transcript)
-        self.sio.emit('update', self.session.emission())
+        self.sio.emit('update', self.session.emission().model_dump())
 
     def set_status(self, status: str):
         """Update session status and emit data"""
         super().set_status(status)
-        self.sio.emit('update', self.session.emission())
+        self.sio.emit('update', self.session.emission().model_dump())
 
     def disconnect(self):
         """Disconnect from websocket server"""
