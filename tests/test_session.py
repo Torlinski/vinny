@@ -1,7 +1,7 @@
 """Test Session object"""
 import pytest
 
-from core.BaseClient import BaseClient
+from src.core.BaseClient import BaseClient
 from tests.WordStream import WordStream
 
 
