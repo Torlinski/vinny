@@ -28,7 +28,7 @@ Exit manually using control-c.
 
 - Use `potry run isort .` to order and group imports.
 
-- Use `poetry run pylint` to run linting.
+- Use `poetry run pylint core tests server main.py` to run linting.
 
 ### Testing
 
