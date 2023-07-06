@@ -1,16 +1,18 @@
-# main.py
+"""main entry point for transcription"""
 import logging
 import os
+import traceback
 
 from google.cloud import speech
 
-import core.MicrophoneStream as MicrophoneStream
+from core.MicrophoneStream import MicrophoneStream
 from core.SIOClient import SIOClient
 
 logging.basicConfig(level=logging.DEBUG)
 
 
 def main():
+    """Run transcription stream and create session"""
     os.system('cls' if os.name == 'nt' else 'clear')
     os.environ[
         'GOOGLE_APPLICATION_CREDENTIALS'
@@ -19,7 +21,7 @@ def main():
     speech_client = speech.SpeechClient()
     speech_config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=MicrophoneStream.RATE,
+        sample_rate_hertz=MicrophoneStream.DEFAULT_RATE,
         language_code=language_code,
     )
     streaming_config = speech.StreamingRecognitionConfig(
@@ -31,9 +33,7 @@ def main():
     stt_client.set_status('Ready')
 
     try:
-        with MicrophoneStream.MicrophoneStream(
-            MicrophoneStream.RATE, MicrophoneStream.CHUNK
-        ) as stream:
+        with MicrophoneStream() as stream:
 
             audio_generator = stream.generator()
 
@@ -57,10 +57,11 @@ def main():
                         stt_client.set_status('Internal Error')
                         logging.debug(e)
 
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         logging.debug('Manually Ended Stream')
     except Exception as e:
         if not isinstance(e, KeyboardInterrupt):
+            traceback.print_exc()
             logging.debug(e)
 
 

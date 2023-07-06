@@ -1,7 +1,7 @@
 {
     "python.analysis.extraPaths": [
-        "./core",
-        "./server",
+        "./core/",
+        "./server/",
         "./tests/"
     ],
     "python.pythonPath": "venv/bin/python",
