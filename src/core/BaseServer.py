@@ -6,7 +6,7 @@ from src.core.Session import Session
 logging.basicConfig(level=logging.DEBUG)
 
 
-class BaseClient:
+class BaseServer:
     """Base Class"""
 
     def __init__(self):

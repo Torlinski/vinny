@@ -18,6 +18,21 @@
             socket.on('chatgpt', function(chatgpt) {
                 document.getElementById('chatgpt').innerHTML = chatgpt;
             });
+
+            let editableDiv = document.querySelector('#content');
+            let previousValue = editableDiv.textContent;
+
+            editableDiv.addEventListener('input', function() {
+                let currentValue = editableDiv.textContent;
+                console.log('Old text: ' + previousValue);
+                console.log('New text: ' + currentValue);
+
+                // Emit an 'update' event to the server with the new text
+                socket.emit('update', { 'text': currentValue });
+
+                // Now update previousValue for the next change
+                previousValue = currentValue;
+            });
         });
         </script>
         <style>

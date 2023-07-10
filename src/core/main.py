@@ -6,14 +6,16 @@ import traceback
 from google.cloud import speech
 
 from src.core.MicrophoneStream import MicrophoneStream
-from src.core.SIOClient import SIOClient
+from src.core.SIOServer import SIOServer
 
 logging.basicConfig(level=logging.DEBUG)
 
-
-def main():
+def main(socketio):
     """Run transcription stream and create session"""
     os.system('cls' if os.name == 'nt' else 'clear')
+    current_dir = os.getcwd()
+    files = os.listdir(current_dir)
+    print(files)
     os.environ[
         'GOOGLE_APPLICATION_CREDENTIALS'
     ] = 'dependable-fuze-388619-8912b19e9733.json'
@@ -29,8 +31,8 @@ def main():
         interim_results=False,
     )
 
-    stt_client = SIOClient(server_url='http://localhost:8080')
-    stt_client.set_status('Ready')
+    stt_server = SIOServer(socketio)
+    stt_server.set_status('Ready')
 
     try:
         with MicrophoneStream() as stream:
@@ -46,15 +48,15 @@ def main():
                 streaming_config, requests
             )
             logging.debug('Started listening...')
-            stt_client.set_status('Listening')
+            stt_server.set_status('Listening')
 
             for response in responses:
                 for result in response.results:
                     transcript = result.alternatives[0].transcript
                     try:
-                        stt_client.update(transcript)
+                        stt_server.update(transcript)
                     except Exception as e:
-                        stt_client.set_status('Internal Error')
+                        stt_server.set_status('Internal Error')
                         logging.debug(e)
 
     except KeyboardInterrupt:
@@ -63,7 +65,3 @@ def main():
         if not isinstance(e, KeyboardInterrupt):
             traceback.print_exc()
             logging.debug(e)
-
-
-if __name__ == '__main__':
-    main()
